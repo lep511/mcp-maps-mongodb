@@ -35,7 +35,6 @@ const EXAMPLE_PROMPTS = [
   'Can you show me Mauna Kea in Hawaii?',
   "Let's go to Venice, Italy.",
   'Take me to the northernmost capital city in the world',
-  "How about the southernmost permanently inhabited settlement? What's it called and where is it?",
   'Show me the location of the ancient city of Petra in Jordan',
   "Let's jump to Machu Picchu in Peru",
   "Can you show me the Three Gorges Dam in China?",
