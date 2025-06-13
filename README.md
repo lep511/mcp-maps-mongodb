@@ -1,0 +1,2 @@
+# mcp-maps-mongodb
+MCP, Gemini, and MongoDB power your global guide! AI answers geo-queries on interactive maps, with seamless MongoDB connection for fast, scalable data storage. Explore, discover, and see the world anew.
