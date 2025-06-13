@@ -59,7 +59,6 @@ const EXAMPLE_PROMPTS = [
   "Find a cliffside village in the Mediterranean"
 ];
 
-
 const ai = new GoogleGenAI({
   apiKey: process.env.API_KEY,
 });
