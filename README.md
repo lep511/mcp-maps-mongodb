@@ -1,2 +1,14 @@
-# mcp-maps-mongodb
-MCP, Gemini, and MongoDB power your global guide! AI answers geo-queries on interactive maps, with seamless MongoDB connection for fast, scalable data storage. Explore, discover, and see the world anew.
+# Run and deploy your AI Studio app
+
+This contains everything you need to run your app locally.
+
+## Run Locally
+
+**Prerequisites:**  Node.js
+
+
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`
