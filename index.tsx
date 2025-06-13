@@ -42,7 +42,6 @@ const EXAMPLE_PROMPTS = [
   "Find a good pizza place near the Eiffel Tower",
   "Are there any highly-rated seafood restaurants in Boston?",
   "Take me to the Great Wall of China",
-  "What's the most remote island you can show me?",
   "Can we visit the pyramids of Giza?",
   "Show me a pink sand beach",
   "Find a street with rainbow-colored houses",
