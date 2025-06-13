@@ -41,8 +41,25 @@ const EXAMPLE_PROMPTS = [
   "Can you show me the Three Gorges Dam in China?",
   "Can you find a town or city with a really funny or unusual name and show it to me?",
   "Find a good pizza place near the Eiffel Tower",
-  "Are there any highly-rated seafood restaurants in Boston?"
+  "Are there any highly-rated seafood restaurants in Boston?",
+  "Take me to the Great Wall of China",
+  "What's the most remote island you can show me?",
+  "Can we visit the pyramids of Giza?",
+  "Show me a pink sand beach",
+  "Find a street with rainbow-colored houses",
+  "Where's the best place to see the Northern Lights?",
+  "Take me to a volcano that's still active",
+  "Show me the capital city of Bhutan",
+  "What's the deepest canyon in the world and where is it?",
+  "Find a floating market in Southeast Asia",
+  "Take me to the most colorful coral reef",
+  "Where can I find a desert with giant sand dunes?",
+  "Can we visit a castle in Scotland?",
+  "Take me to a place with the clearest water on Earth",
+  "Where's the largest tree in the world?",
+  "Find a cliffside village in the Mediterranean"
 ];
+
 
 const ai = new GoogleGenAI({
   apiKey: process.env.API_KEY,
