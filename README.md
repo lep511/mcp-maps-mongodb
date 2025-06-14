@@ -23,94 +23,69 @@ To build and run the application using Docker:
 
 To deploy your app to Google Cloud Run after setting up the local development environment, here are the steps:
 
-## 4. Prepare for Cloud Run Deployment
+## Configure Google Cloud
 
-First, you'll need to containerize your application. Create a `Dockerfile` in your project root:
-
-```dockerfile
-FROM node:18-alpine
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm ci --only=production
-
-COPY . .
-RUN npm run build
-
-EXPOSE 3000
-
-CMD ["npm", "start"]
-```
-
-## 5. Set up Google Cloud
-
-Install and configure the Google Cloud CLI:
 ```bash
-# Install gcloud CLI (if not already installed)
-curl https://sdk.cloud.google.com | bash
 
-# Initialize and authenticate
-gcloud init
+# Install Google Cloud SDK if not already installed
+# Follow instructions at https://cloud.google.com/sdk/docs/install
+
+# Authenticate with Google Cloud
 gcloud auth login
 
 # Set your project ID
-gcloud config set project YOUR_PROJECT_ID
+export PROJECT_ID="your-project-id"
+gcloud config set project $PROJECT_ID
+
+# Enable required APIs
+gcloud services enable cloudbuild.googleapis.com
+gcloud services enable run.googleapis.com
+gcloud services enable artifactregistry.googleapis.com
 ```
 
-## 6. Deploy to Cloud Run
+## Using Google Artifact Registry
 
-You have two main deployment options:
-
-### Option A: Deploy from source (recommended for Next.js)
 ```bash
-# Deploy directly from your source code
-gcloud run deploy your-app-name \
+# Create Artifact Registry repository
+gcloud artifacts repositories create itaca-app \
+  --repository-format=docker \
+  --location=us-central1
+
+# Configure Docker authentication
+gcloud auth configure-docker us-central1-docker.pkg.dev
+
+# Build and tag image
+docker build -t us-central1-docker.pkg.dev/$PROJECT_ID/itaca-repo/itaca-app:latest .
+
+# Push to registry
+docker push us-central1-docker.pkg.dev/$PROJECT_ID/itaca-repo/itaca-app:latest
+
+# Deploy from registry
+gcloud run deploy itaca-app \
+  --image us-central1-docker.pkg.dev/$PROJECT_ID/itaca-repo/itaca-app:latest \
+  --platform managed \
+  --region us-central1 \
+  --allow-unauthenticated \
+  --set-env-vars="GEMINI_API_KEY=your-gemini-api-key-here" \
+  --memory=512Mi \
+  --cpu=1
+```
+
+## Optional - Secure Environment Variables (Recommended)
+
+Instead of passing the API key directly, use Google Secret Manager:
+
+```bash
+# Create secret
+echo -n "your-gemini-api-key-here" | gcloud secrets create gemini-api-key --data-file=-
+
+# Deploy with secret
+gcloud run deploy itaca-app \
   --source . \
   --platform managed \
   --region us-central1 \
   --allow-unauthenticated \
-  --set-env-vars GEMINI_API_KEY=your_actual_api_key
+  --set-secrets="GEMINI_API_KEY=gemini-api-key:latest" \
+  --memory=512Mi \
+  --cpu=1
 ```
-
-### Option B: Build and deploy container image
-```bash
-# Build and push to Google Container Registry
-gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/your-app-name
-
-# Deploy the container
-gcloud run deploy your-app-name \
-  --image gcr.io/YOUR_PROJECT_ID/your-app-name \
-  --platform managed \
-  --region us-central1 \
-  --allow-unauthenticated \
-  --set-env-vars GEMINI_API_KEY=your_actual_api_key
-```
-
-## 7. Configure Environment Variables (Alternative)
-
-For better security, you can use Google Secret Manager instead of passing the API key directly:
-
-```bash
-# Store your API key in Secret Manager
-echo "your_actual_gemini_api_key" | gcloud secrets create gemini-api-key --data-file=-
-
-# Deploy with secret reference
-gcloud run deploy your-app-name \
-  --source . \
-  --platform managed \
-  --region us-central1 \
-  --allow-unauthenticated \
-  --set-secrets GEMINI_API_KEY=gemini-api-key:latest
-```
-
-## 8. Access Your Deployed App
-
-After deployment, Cloud Run will provide you with a URL like:
-`https://your-app-name-[hash]-uc.a.run.app`
-
-The deployment process typically takes 2-5 minutes, and your app will be automatically scaled based on traffic.
-
-Would you like me to help you with any specific part of this deployment process or troubleshoot any issues you encounter?
-
-Visit `http://localhost:3000` in your browser to access the application.

@@ -140,7 +140,9 @@ document.addEventListener('DOMContentLoaded', async (event) => {
                 name: camelCaseToDash(part.functionCall.name!),
                 arguments: part.functionCall.args
               };
-
+              // ==================================
+              // Show the function call in the chat
+              // ================================== 
               const explanation = 'Calling function:\n```json\n' + JSON.stringify(mcpCall, null, 2) + '\n```'
               const { thinking, text } = playground.addMessage('assistant', '');
               text.innerHTML = await marked.parse(explanation);

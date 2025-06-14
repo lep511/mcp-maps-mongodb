@@ -50,6 +50,18 @@ export async function startMcpGoogleMapServer(
   );
 
   server.tool(
+    'view_location_on_google_maps',
+    'View a specific query or geographical location and display in the embedded maps interface',
+    {location: z.string()},
+    async ({location}) => {
+      mapQueryHandler({location});
+      return {
+        content: [{type: 'text', text: `Viewing location: ${location}`}],
+      };
+    },
+  );
+
+  server.tool(
     'directions_on_google_maps',
     'Search google maps for directions from origin to destination.',
     {origin: z.string(), destination: z.string()},
@@ -62,6 +74,10 @@ export async function startMcpGoogleMapServer(
       };
     },
   );
+
+
+  // Tool to search for restaurants in a sample MongoDB database
+  // Note: This is a placeholder. Actual MongoDB integration should be done on the backend.
 
   server.tool(
     'search_restaurants',
