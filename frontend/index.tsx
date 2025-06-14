@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
   const playground = document.createElement('gdm-playground') as Playground;
   rootElement.appendChild(playground);
 
-  playground.renderMapQuery({ location: 'London' });
+  playground.renderMapQuery({ location: 'Rome' });
 
 
   // ---------
