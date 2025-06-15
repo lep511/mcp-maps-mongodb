@@ -6,6 +6,7 @@
 // tslint:disable
 import {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
 import {Transport} from '@modelcontextprotocol/sdk/shared/transport.js';
+import {ResourceTemplate} from "@modelcontextprotocol/sdk/server/mcp.js";
 import {z} from 'zod';
 
 export interface MapParams {
@@ -21,7 +22,7 @@ export async function startMcpGoogleMapServer(
 ) {
   // Create an MCP server
   const server = new McpServer({
-    name: 'AI Studio Google Map',
+    name: 'Itaca App',
     version: '1.0.0',
   });
 
@@ -50,18 +51,6 @@ export async function startMcpGoogleMapServer(
   );
 
   server.tool(
-    'view_location_on_google_maps',
-    'View a specific query or geographical location and display in the embedded maps interface',
-    {location: z.string()},
-    async ({location}) => {
-      mapQueryHandler({location});
-      return {
-        content: [{type: 'text', text: `Viewing location: ${location}`}],
-      };
-    },
-  );
-
-  server.tool(
     'directions_on_google_maps',
     'Search google maps for directions from origin to destination.',
     {origin: z.string(), destination: z.string()},
@@ -75,7 +64,6 @@ export async function startMcpGoogleMapServer(
     },
   );
 
-
   // Tool to search for restaurants in a sample MongoDB database
   // Note: This is a placeholder. Actual MongoDB integration should be done on the backend.
 
@@ -87,7 +75,7 @@ export async function startMcpGoogleMapServer(
       locationContext: z.string().optional().describe('Optional location context for the search, e.g., "near Eiffel Tower", "in San Francisco".'),
     },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async ({ searchQuery, locationContext }) => {
+    async ({ searchQuery, locationContext }, _extra) => {
       //
       // IMPORTANT: This is a placeholder.
       // In a real application, this function would make a call to a secure backend API.
@@ -100,7 +88,7 @@ export async function startMcpGoogleMapServer(
         message += ` near "${locationContext}"`;
       }
       message +=
-        '. (Note: This is a placeholder. Backend MongoDB integration is required for actual search results.)';
+        '. Results:\n\n';
       
       return {
         content: [{ type: 'text', text: message }],

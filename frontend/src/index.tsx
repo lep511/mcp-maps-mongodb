@@ -6,9 +6,9 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
 import { GoogleGenAI, mcpToTool } from '@google/genai';
-import { ChatState, marked, Playground } from './playground';
+import { ChatState, marked, Playground } from './services/playground';
 
-import { startMcpGoogleMapServer } from './mcp_maps_server';
+import { startMcpGoogleMapServer } from './services/mcp_maps_server';
 
 /* --------- */
 
@@ -53,7 +53,6 @@ const EXAMPLE_PROMPTS = [
   "Take me to the most colorful coral reef",
   "Where can I find a desert with giant sand dunes?",
   "Can we visit a castle in Scotland?",
-  "Take me to a place with the clearest water on Earth",
   "Where's the largest tree in the world?",
   "Find a cliffside village in the Mediterranean"
 ];
@@ -64,7 +63,7 @@ const ai = new GoogleGenAI({
 
 function createAiChat(mcpClient: Client) {
   return ai.chats.create({
-    model: 'gemini-2.5-flash-preview-04-17',
+    model: 'gemini-2.5-flash-preview-05-20',
     config: {
       systemInstruction: SYSTEM_INSTRUCTIONS,
       tools: [mcpToTool(mcpClient)],
@@ -92,9 +91,19 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 
   const [transportA, transportB] = InMemoryTransport.createLinkedPair();
 
-  void startMcpGoogleMapServer(transportA, (params: { location?: string, origin?: string, destination?: string, search?: string }) => {
-    playground.renderMapQuery(params);
-  });
+  void startMcpGoogleMapServer(
+    transportA,
+    (
+      params: {
+        location?: string;
+        origin?: string;
+        destination?: string;
+        search?: string;
+      }
+    ) => {
+      playground.renderMapQuery(params);
+    }
+  );
 
   const mcpClient = await startClient(transportB);
 
@@ -143,8 +152,11 @@ document.addEventListener('DOMContentLoaded', async (event) => {
               // ==================================
               // Show the function call in the chat
               // ================================== 
-              const explanation = 'Calling function:\n```json\n' + JSON.stringify(mcpCall, null, 2) + '\n```'
+              const explanation =
+                'Calling function:\n```json\n' +
+                JSON.stringify(mcpCall, null, 2);
               const { thinking, text } = playground.addMessage('assistant', '');
+
               text.innerHTML = await marked.parse(explanation);
             }
 
