@@ -83,6 +83,8 @@ document.addEventListener('DOMContentLoaded', async (event) => {
         origin?: string;
         destination?: string;
         search?: string;
+        placeId?: string;
+        restaurantSearchQuery?: string;
       }
     ) => {
       playground.renderMapQuery(params);

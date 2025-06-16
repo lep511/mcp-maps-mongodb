@@ -85,11 +85,20 @@ export async function startMcpGoogleMapServer(
     'search_restaurants',
     'Searches the sample_restaurants database for restaurants based on a query. Can be used to find types of food, specific restaurant names, or restaurants in an area.',
     {restaurantSearchQuery: z.string()},
-    async ({restaurantSearchQuery}) => {
-      mapQueryHandler({restaurantSearchQuery});
+    async ({restaurantSearchQuery}, _extra) => {
       return {
-        content: [{type: 'text', text: `Searching: ${restaurantSearchQuery}`}],
+          content: [{type: "text" as const, text: 'Search fail.'}],
       };
+      try {
+        mapQueryHandler({restaurantSearchQuery});
+        return {
+          content: [{type: "text" as const, text: `Searching: ${restaurantSearchQuery}`}],
+        };
+      } catch (error) {
+        return {
+          content: [{type: "text" as const, text: 'Search fail.'}],
+        };
+      }
     },
   );
 

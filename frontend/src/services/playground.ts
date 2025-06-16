@@ -119,13 +119,12 @@ export class Playground extends LitElement {
     } else if (location.placeId) {
       src = `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=place_id:${location.placeId}`;
     } else if (location.restaurantSearchQuery) {
-      // Ireland coordinates as a default
-      const latitude = 53.349805;
-      const longitude = -6.26031;
-      src = `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=${latitude},${longitude}&zoom=15`
+      const position = { lat: -25.344, lng: 131.031 };
+      src = `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=${position.lat},${position.lng}&zoom=15`;
     }
 
     this.previewFrame.src = src;
+    
   }
 
   setInputField(message: string) {
