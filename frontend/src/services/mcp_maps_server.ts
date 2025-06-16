@@ -14,6 +14,8 @@ export interface MapParams {
   search?: string;
   origin?: string;
   destination?: string;
+  place: string;
+  placeId?: string;
 }
 
 export async function startMcpGoogleMapServer(
@@ -60,6 +62,30 @@ export async function startMcpGoogleMapServer(
         content: [
           {type: 'text', text: `Navigating from ${origin} to ${destination}`},
         ],
+      };
+    },
+  );
+
+  server.tool(
+    'place_details_on_google_maps',
+    'Search google maps for details of a place by its place ID.',
+    {placeId: z.string()},
+    async ({placeId}) => {
+      mapQueryHandler({placeId});
+      return {
+        content: [{type: 'text', text: `Fetching details for place ID: ${placeId}`}],
+      };
+    },
+  );
+
+  server.tool(
+    'place_on_google_maps',
+    'Search google maps for a place by its name.',
+    {place: z.string()},
+    async ({place}) => {
+      mapQueryHandler({location: place});
+      return {
+        content: [{type: 'text', text: `Searching for place: ${place}`}],
       };
     },
   );

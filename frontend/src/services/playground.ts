@@ -102,8 +102,13 @@ export class Playground extends LitElement {
     this.chatState = state;
   }
 
-  renderMapQuery(location: MapParams) {
-    const MAPS_API_KEY = 'AIzaSyC7c1m_Jyz3uw6lbIQUNuH3e6o0NKc_8hk';
+  async renderMapQuery(location: MapParams) {
+    const MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+    if (!MAPS_API_KEY) {
+      console.error('Google Maps API key is not set.');
+      return;
+    }
+
     let src = '';
     if (location.location) {
       src = `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=${location.location}`;
@@ -111,6 +116,14 @@ export class Playground extends LitElement {
       src = `https://www.google.com/maps/embed/v1/directions?key=${MAPS_API_KEY}&origin=${location.origin}&destination=${location.destination}`;
     } else if (location.search) {
       src = `https://www.google.com/maps/embed/v1/search?key=${MAPS_API_KEY}&q=${location.search}`;
+    } else if (location.place) {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(searchQuery)}&key=${API_KEY}`
+      );
+      const data = await response.json();
+      src = data.results[0]?.place_id;
+    } else if (location.placeId) {
+      src = `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=place_id:${location.placeId}`;
     }
 
     this.previewFrame.src = src;
