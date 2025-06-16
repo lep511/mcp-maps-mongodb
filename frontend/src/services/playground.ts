@@ -116,14 +116,10 @@ export class Playground extends LitElement {
       src = `https://www.google.com/maps/embed/v1/directions?key=${MAPS_API_KEY}&origin=${location.origin}&destination=${location.destination}`;
     } else if (location.search) {
       src = `https://www.google.com/maps/embed/v1/search?key=${MAPS_API_KEY}&q=${location.search}`;
-    } else if (location.place) {
-      const response = await fetch(
-        `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(searchQuery)}&key=${API_KEY}`
-      );
-      const data = await response.json();
-      src = data.results[0]?.place_id;
     } else if (location.placeId) {
       src = `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=place_id:${location.placeId}`;
+    } else if (location.restaurantSearchQuery) {
+      src = `https://www.google.com/maps/embed/v1/search?key=${MAPS_API_KEY}&q=${location.restaurantSearchQuery}`;
     }
 
     this.previewFrame.src = src;
