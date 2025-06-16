@@ -28,33 +28,17 @@ When asked a question try to use tools to show related informations on the map o
 Always explain what are you doing.`;
 
 const EXAMPLE_PROMPTS = [
-  'Where is something cool to see',
-  'Show me San Francisco',
-  'Where is a place with a tilted tower?',
-  'Show me Mount Everest',
-  'Can you show me Mauna Kea in Hawaii?',
-  "Let's go to Venice, Italy.",
-  'Take me to the northernmost capital city in the world',
-  'Show me the location of the ancient city of Petra in Jordan',
-  "Let's jump to Machu Picchu in Peru",
-  "Can you show me the Three Gorges Dam in China?",
-  "Can you find a town or city with a really funny or unusual name and show it to me?",
+  'Spicy Vegetarian Food in Washington, DC',
+  'Best Italian Restaurants in New York City',
+  'Authentic Mexican Tacos in Los Angeles',
+  'Fresh Seafood Markets in Boston',
+  'Korean BBQ Places in Chicago',
+  'Vegan Bakeries in Portland, Oregon',
+  'French Bistros in New Orleans',
+  'Craft Coffee Shops in Seattle',
+  'Dim Sum Restaurants in San Francisco',
+  'BBQ Joints in Austin, Texas',
   "Find a good pizza place near the Eiffel Tower",
-  "Are there any highly-rated seafood restaurants in Boston?",
-  "Take me to the Great Wall of China",
-  "Can we visit the pyramids of Giza?",
-  "Show me a pink sand beach",
-  "Find a street with rainbow-colored houses",
-  "Where's the best place to see the Northern Lights?",
-  "Take me to a volcano that's still active",
-  "Show me the capital city of Bhutan",
-  "What's the deepest canyon in the world and where is it?",
-  "Find a floating market in Southeast Asia",
-  "Take me to the most colorful coral reef",
-  "Where can I find a desert with giant sand dunes?",
-  "Can we visit a castle in Scotland?",
-  "Where's the largest tree in the world?",
-  "Find a cliffside village in the Mediterranean"
 ];
 
 const ai = new GoogleGenAI({

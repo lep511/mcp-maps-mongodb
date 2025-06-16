@@ -119,7 +119,10 @@ export class Playground extends LitElement {
     } else if (location.placeId) {
       src = `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=place_id:${location.placeId}`;
     } else if (location.restaurantSearchQuery) {
-      src = `https://www.google.com/maps/embed/v1/search?key=${MAPS_API_KEY}&q=${location.restaurantSearchQuery}`;
+      // Ireland coordinates as a default
+      const latitude = 53.349805;
+      const longitude = -6.26031;
+      src = `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=${latitude},${longitude}&zoom=15`
     }
 
     this.previewFrame.src = src;
