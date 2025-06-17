@@ -14,6 +14,9 @@ use tower_http::trace::TraceLayer;
 use tracing_subscriber;
 use mongodb::{bson::{doc, DateTime}, Client, Collection};
 
+mod document;
+use document::ShortTermRental;
+
 #[derive(Clone)]
 struct AppState {
     http_client: reqwest::Client,
@@ -107,6 +110,22 @@ async fn get_data(
 //         }
 //     }
 // }
+
+async fn mock_get_data() -> Json<ApiResponse<ShortTermRental>> {
+    let mock_data = ShortTermRental {
+        id: 123,
+        name: "Beautiful Loft".to_string(),
+        summary: Some("A nice and cozy place".to_string()),
+        ..Default::default() // El resto se rellena con los valores por defecto
+    };
+
+    Json(ApiResponse {
+        success: true,
+        data: Some(mock_data),
+        error: None,
+        request_id: uuid::Uuid::new_v4().to_string(),
+    })
+}
 
 async fn health_check() -> Json<ApiResponse<HealthCheck>> {
     let health = HealthCheck {
@@ -267,6 +286,7 @@ async fn main() {
         .route("/health", get(health_check))
         // .route("/data", post(store_data))
         .route("/data", get(get_data))
+        .route("/mock", get(mock_get_data))
         .route("/api/{*path}", get(proxy_get_request))
         .route("/api/{*path}", post(proxy_post_request))
         .layer(middleware::from_fn(request_logging_middleware))
