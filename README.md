@@ -1,3 +1,4 @@
+![image](https://i.ibb.co/nKSFw0z/front-1.png)
 # Itaca Rental Location Search
 
 A smart search tool for short-term rentals that understands natural language queries. Search by accommodation type, specific rental names, or location areas using advanced vector search capabilities.
