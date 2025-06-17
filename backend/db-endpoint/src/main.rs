@@ -11,38 +11,45 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
-use tracing_subscriber;
 use mongodb::{bson::doc, Client, Collection};
+use openai::embed::EmbedOpenAI;
+use env_logger::Env;
 
 mod document;
 use document::{ShortTermRental, ResponseSearch};
 
-#[derive(Clone)]
+// OpenAI
+pub mod openai;
+pub const DEBUG_PRE: bool = false;
+pub const DEBUG_POST: bool = false;
+
+#[derive(Debug, Clone)]
 struct AppState {
     http_client: reqwest::Client,
     services: HashMap<String, ServiceConfig>,
     collection: Collection<ResponseSearch>,
 }
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 struct ServiceConfig {
     base_url: String,
     timeout_ms: u64,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 struct QueryParams {
     service: Option<String>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 struct ApiResponse<T> {
     success: bool,
     data: Option<T>,
+    embed: Option<Vec<f32>>,
     error: Option<String>,
     request_id: String,
 }
 
-#[derive(Serialize)]
+#[derive(Debug, Serialize, Clone)]
 struct HealthCheck {
     status: String,
     timestamp: String,
@@ -66,6 +73,7 @@ async fn get_data(
     Ok(Json(ApiResponse {
         success: true,
         data: results,
+        embed: None,
         error: None,
         request_id: uuid::Uuid::new_v4().to_string(),
     }))
@@ -123,6 +131,44 @@ async fn mock_get_data(
     Ok(Json(ApiResponse {
         success: true,
         data: mock_result,
+        embed: None,
+        error: None,
+        request_id: uuid::Uuid::new_v4().to_string(),
+    }))
+}
+
+async fn post_embed(
+    Path(path): Path<String>,
+    Query(params): Query<QueryParams>,
+    headers: HeaderMap,
+    State(state): State<Arc<AppState>>,
+    body: String,
+) -> Result<Json<ApiResponse<serde_json::Value>>, StatusCode> {
+    let service_name = params.service.unwrap_or_else(|| "default".to_string());
+
+    let llm = EmbedOpenAI::new("text-embedding-3-small");   
+
+    let input_str = body.trim().to_string();
+
+    if input_str.is_empty() {
+        tracing::error!("Input string is empty");
+        return Err(StatusCode::BAD_REQUEST);
+    }
+    let input_preprocessed = embed_preprocess(&input_str);
+    tracing::info!("Embedding preprocessed: {}", input_preprocessed);
+
+    let response = llm
+        .with_dimensions(1536)
+        .embed_content(&input_preprocessed)
+        .await
+        .expect("Failed to get embedding");
+
+    let mock_embed = response.data[0].embedding.clone();
+
+    Ok(Json(ApiResponse {
+        success: true,
+        data: None,
+        embed: Some(mock_embed),
         error: None,
         request_id: uuid::Uuid::new_v4().to_string(),
     }))
@@ -138,6 +184,7 @@ async fn health_check() -> Json<ApiResponse<HealthCheck>> {
     Json(ApiResponse {
         success: true,
         data: Some(health),
+        embed: None,
         error: None,
         request_id: uuid::Uuid::new_v4().to_string(),
     })
@@ -250,7 +297,7 @@ async fn request_logging_middleware(
 #[tokio::main]
 async fn main() {
     // Initialize tracing
-    tracing_subscriber::fmt::init();
+    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
     // MongoDB connection
     let mongodb_uri = std::env::var("MONGODB_URI")
@@ -288,6 +335,7 @@ async fn main() {
         // .route("/data", post(store_data))
         .route("/data", get(get_data))
         .route("/mock", get(mock_get_data))
+        .route("/embed/{*path}", post(post_embed))
         .route("/api/{*path}", get(proxy_get_request))
         .route("/api/{*path}", post(proxy_post_request))
         .layer(middleware::from_fn(request_logging_middleware))
