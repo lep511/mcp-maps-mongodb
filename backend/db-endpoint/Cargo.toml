@@ -1,0 +1,19 @@
+[package]
+name = "db-endpoint"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+axum = "0.8.4"
+tower = "0.5.2"
+tower-http = { version = "0.6.6", features = ["cors", "trace"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+reqwest = { version = "0.12.20", features = ["json"] }
+tracing = "0.1"
+tracing-subscriber = "0.3"
+uuid = { version = "1.0", features = ["v4"] }
+tokio = { version = "1", features = ["full"] }
+chrono = "0.4.41"
+mongodb = "3.2.3"
