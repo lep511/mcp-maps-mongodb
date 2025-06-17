@@ -29,25 +29,25 @@ that match specific criteria. When users request accommodation
 searches, use available tools. Always explain what are you doing.`;
 
 const EXAMPLE_PROMPTS = [
-  'Beachfront rentals with ocean views in Miami',
-  'Family-friendly apartments near Central Park NYC',
-  'Cozy cabins in the mountains of Colorado',
-  'Modern lofts in downtown San Francisco',
-  'Budget-friendly studios near UCLA campus',
-  'Luxury penthouses with city views in Chicago',
-  'Pet-friendly cottages in Portland Oregon',
-  'Ski-in ski-out chalets in Aspen Colorado',
-  'Waterfront condos in Seattle Washington',
-  'Find a romantic getaway rental near Napa Valley',
-  'Quiet retreats near Yellowstone National Park',
-  'Downtown condos walking distance to Broadway NYC',
-  'Lakeside cabins with private docks in Minnesota',
-  'Arts district lofts in Detroit Michigan',
-  'Beach houses with pools in Outer Banks NC',
-  'Farm stays with horseback riding in Kentucky',
-  'Rooftop terraces overlooking Golden Gate Bridge',
-  'Historic Victorian homes in San Antonio Texas',
-  'Eco-friendly treehouses in Olympic National Forest',
+  // 'Beachfront rentals with ocean views in Miami',
+  // 'Family-friendly apartments near Central Park NYC',
+  // 'Cozy cabins in the mountains of Colorado',
+  // 'Modern lofts in downtown San Francisco',
+  // 'Budget-friendly studios near UCLA campus',
+  // 'Luxury penthouses with city views in Chicago',
+  // 'Pet-friendly cottages in Portland Oregon',
+  'City center private room with bed in Sham Shui Po, Hong Kon',
+  // 'Waterfront condgos in Seattle Washington',
+  // 'Find a romantic getaway rental near Napa Valley',
+  // 'Quiet retreats near Yellowstone National Park',
+  // 'Downtown condos walking distance to Broadway NYC',
+  // 'Lakeside cabins with private docks in Minnesota',
+  // 'Arts district lofts in Detroit Michigan',
+  // 'Beach houses with pools in Outer Banks NC',
+  // 'Farm stays with horseback riding in Kentucky',
+  // 'Rooftop terraces overlooking Golden Gate Bridge',
+  // 'Historic Victorian homes in San Antonio Texas',
+  // 'Eco-friendly treehouses in Olympic National Forest',
 ];
 
 const ai = new GoogleGenAI({
@@ -92,6 +92,8 @@ document.addEventListener('DOMContentLoaded', async (event) => {
         search?: string;
         country?: string;
         city?: string;
+        lat?: number;
+        lng?: number;
         restaurantSearchQuery?: string;
       }
     ) => {

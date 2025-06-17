@@ -12,16 +12,16 @@ use std::sync::Arc;
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber;
-use mongodb::{bson::{doc, DateTime}, Client, Collection};
+use mongodb::{bson::doc, Client, Collection};
 
 mod document;
-use document::ShortTermRental;
+use document::{ShortTermRental, ResponseSearch};
 
 #[derive(Clone)]
 struct AppState {
     http_client: reqwest::Client,
     services: HashMap<String, ServiceConfig>,
-    collection: Collection<DataEntry>,
+    collection: Collection<ResponseSearch>,
 }
 #[derive(Clone)]
 struct ServiceConfig {
@@ -49,25 +49,17 @@ struct HealthCheck {
     version: String,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
-struct DataEntry {
-    item: String,
-    price: f64,
-    quantity: i32,
-    date: DateTime,
-}
-
 async fn get_data(
     Query(params): Query<HashMap<String, String>>,
     State(state): State<Arc<AppState>>,
-) -> Result<Json<ApiResponse<DataEntry>>, StatusCode> {
+) -> Result<Json<ApiResponse<ResponseSearch>>, StatusCode> {
     
     // let limit = params.get("limit")
     //     .and_then(|l| l.parse::<i64>().ok())
     //     .unwrap_or(10);
     
     let results = state.collection
-        .find_one(doc! { "item": "abc" })
+        .find_one(doc! { "name": "Private Room in Bushwick" })
         .await
         .expect("Failed to query database");
 
@@ -111,20 +103,29 @@ async fn get_data(
 //     }
 // }
 
-async fn mock_get_data() -> Json<ApiResponse<ShortTermRental>> {
-    let mock_data = ShortTermRental {
-        id: 123,
-        name: "Beautiful Loft".to_string(),
-        summary: Some("A nice and cozy place".to_string()),
-        ..Default::default() // El resto se rellena con los valores por defecto
-    };
+async fn mock_get_data(
+    Query(params): Query<HashMap<String, String>>,
+    State(state): State<Arc<AppState>>,
+) -> Result<Json<ApiResponse<ResponseSearch>>, StatusCode> {
 
-    Json(ApiResponse {
+    let mock_result = state.collection
+        .find_one(doc! { "_id": 10084023 })
+        .await
+        .expect("Failed to query database");
+
+    // let mock_data = ShortTermRental {
+    //     id: 123,
+    //     name: "Beautiful Loft".to_string(),
+    //     summary: Some("A nice and cozy place".to_string()),
+    //     ..Default::default() // El resto se rellena con los valores por defecto
+    // };
+
+    Ok(Json(ApiResponse {
         success: true,
-        data: Some(mock_data),
+        data: mock_result,
         error: None,
         request_id: uuid::Uuid::new_v4().to_string(),
-    })
+    }))
 }
 
 async fn health_check() -> Json<ApiResponse<HealthCheck>> {
@@ -259,9 +260,9 @@ async fn main() {
         .await
         .expect("Failed to connect to MongoDB");
         
-    let collection: Collection<DataEntry> = client
-        .database("sample_sales")
-        .collection("sales");
+    let collection: Collection<ResponseSearch> = client
+        .database("sample_airbnb")
+        .collection("airbnb");
 
     // Configure services
     let mut services = HashMap::new();

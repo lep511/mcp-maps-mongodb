@@ -22,19 +22,11 @@
 cargo build --release
 ```
 
-### Option 1: Cloud Run + API Gateway
+### Deploy in Cloud Run
 ```bash
 # Make the deploy script executable and run it
 chmod +x deploy.sh
 ./deploy.sh YOUR_PROJECT_ID us-central1
-```
-
-### Option 2: Using Terraform
-```bash
-# Initialize and apply
-terraform init
-terraform plan -var="project_id=YOUR_PROJECT_ID"
-terraform apply -var="project_id=YOUR_PROJECT_ID"
 ```
 
 ## Key Features

@@ -112,12 +112,10 @@ export class Playground extends LitElement {
     let src = '';
     if (location.location) {
       src = `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=${location.location}`;
-    } else if (location.origin && location.destination) {
-      src = `https://www.google.com/maps/embed/v1/directions?key=${MAPS_API_KEY}&origin=${location.origin}&destination=${location.destination}`;
+    } else if (location.lat && location.lng) {
+      src = `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=${location.lat},${location.lng}&zoom=15`;
     } else if (location.search) {
       src = `https://www.google.com/maps/embed/v1/search?key=${MAPS_API_KEY}&q=${location.search}`;
-    } else if (location.placeId) {
-      src = `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=place_id:${location.placeId}`;
     } else if (location.restaurantSearchQuery) {
       const position = { lat: -25.344, lng: 131.031 };
       src = `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=${position.lat},${position.lng}&zoom=15`;
