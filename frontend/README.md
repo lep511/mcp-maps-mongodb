@@ -67,8 +67,11 @@ gcloud run deploy itaca-app \
   --region us-central1 \
   --allow-unauthenticated \
   --set-env-vars="GEMINI_API_KEY=your-gemini-api-key-here" \
+  --set-env-vars="GOOGLE_MAPS_API_KEY=your-google-maps-api-key-here" \
   --memory=512Mi \
-  --cpu=1
+  --cpu=1 \
+  --max-instances 10 \
+  --min-instances 1
 ```
 
 ## Optional - Secure Environment Variables (Recommended)

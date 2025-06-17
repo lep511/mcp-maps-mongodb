@@ -14,6 +14,7 @@ use tower_http::trace::TraceLayer;
 use mongodb::{bson::doc, Client, Collection};
 use openai::embed::EmbedOpenAI;
 use env_logger::Env;
+use futures::TryStreamExt;
 
 mod document;
 use document::{ShortTermRental, ResponseSearch};
@@ -154,21 +155,61 @@ async fn post_embed(
         tracing::error!("Input string is empty");
         return Err(StatusCode::BAD_REQUEST);
     }
-    let input_preprocessed = embed_preprocess(&input_str);
-    tracing::info!("Embedding preprocessed: {}", input_preprocessed);
+    tracing::info!("Embedding: {}", input_str);
 
     let response = llm
         .with_dimensions(1536)
-        .embed_content(&input_preprocessed)
+        .embed_content(&input_str)
         .await
         .expect("Failed to get embedding");
 
-    let mock_embed = response.data[0].embedding.clone();
+    let embeddings: Vec<f32> = response.data[0].embedding.clone();
+        
+    let pipeline = vec! [
+        doc! {
+            "$vectorSearch": doc! {
+            "queryVector": embeddings,
+            "path": "text_embeddings",
+            "numCandidates": 120,
+            "index": "vector_index",
+            "limit": 1
+        }
+        },
+        doc! {
+            "$project": doc! {
+                "_id": 0,
+                "name": 1,
+                "summary": 1,
+                "description": 1,
+                "beds": 1,
+                "bathrooms": 1,
+                "bedrooms": 1,
+                "amenities": 1,
+                "price": 1,
+            }
+        }
+    ]; 
+
+    let mut results = state.collection
+        .aggregate(pipeline)
+        .await
+        .expect("Failed to execute aggregation");
+    
+    let first_result = results
+        .try_next()
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
+        .ok_or(StatusCode::NOT_FOUND)?;
+
+    // Convert Document to serde_json::Value
+    let bson_value = mongodb::bson::to_bson(&first_result)
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let json_value = serde_json::Value::from(bson_value);
 
     Ok(Json(ApiResponse {
         success: true,
-        data: None,
-        embed: Some(mock_embed),
+        data: Some(json_value),
+        embed: None, // Some(embeddings),
         error: None,
         request_id: uuid::Uuid::new_v4().to_string(),
     }))
