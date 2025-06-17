@@ -22,23 +22,32 @@ async function startClient(transport: Transport) {
 /* ------------ */
 
 
-const SYSTEM_INSTRUCTIONS = `you're an extremely proficient with map and discovering interesting places.
-You can use tools to control the map or find information about places like restaurants.
-When asked a question try to use tools to show related informations on the map or provide information from available data sources.
-Always explain what are you doing.`;
+const SYSTEM_INSTRUCTIONS = `You are an expert travel assistant specializing 
+in discovering optimal short-term rental locations worldwide. 
+You excel at using mapping tools and location data to identify accommodations 
+that match specific criteria. When users request accommodation 
+searches, use available tools. Always explain what are you doing.`;
 
 const EXAMPLE_PROMPTS = [
-  'Spicy Vegetarian Food in Washington, DC',
-  'Best Italian Restaurants in New York City',
-  'Authentic Mexican Tacos in Los Angeles',
-  'Fresh Seafood Markets in Boston',
-  'Korean BBQ Places in Chicago',
-  'Vegan Bakeries in Portland, Oregon',
-  'French Bistros in New Orleans',
-  'Craft Coffee Shops in Seattle',
-  'Dim Sum Restaurants in San Francisco',
-  'BBQ Joints in Austin, Texas',
-  "Find a good pizza place near the Eiffel Tower",
+  'Beachfront rentals with ocean views in Miami',
+  'Family-friendly apartments near Central Park NYC',
+  'Cozy cabins in the mountains of Colorado',
+  'Modern lofts in downtown San Francisco',
+  'Budget-friendly studios near UCLA campus',
+  'Luxury penthouses with city views in Chicago',
+  'Pet-friendly cottages in Portland Oregon',
+  'Ski-in ski-out chalets in Aspen Colorado',
+  'Waterfront condos in Seattle Washington',
+  'Find a romantic getaway rental near Napa Valley',
+  'Quiet retreats near Yellowstone National Park',
+  'Downtown condos walking distance to Broadway NYC',
+  'Lakeside cabins with private docks in Minnesota',
+  'Arts district lofts in Detroit Michigan',
+  'Beach houses with pools in Outer Banks NC',
+  'Farm stays with horseback riding in Kentucky',
+  'Rooftop terraces overlooking Golden Gate Bridge',
+  'Historic Victorian homes in San Antonio Texas',
+  'Eco-friendly treehouses in Olympic National Forest',
 ];
 
 const ai = new GoogleGenAI({
@@ -80,10 +89,9 @@ document.addEventListener('DOMContentLoaded', async (event) => {
     (
       params: {
         location?: string;
-        origin?: string;
-        destination?: string;
         search?: string;
-        placeId?: string;
+        country?: string;
+        city?: string;
         restaurantSearchQuery?: string;
       }
     ) => {

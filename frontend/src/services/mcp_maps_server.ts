@@ -12,9 +12,8 @@ import {z} from 'zod';
 export interface MapParams {
   location?: string;
   search?: string;
-  origin?: string;
-  destination?: string;
-  placeId?: string;
+  country?: string;
+  city?: string;
   restaurantSearchQuery?: string;
 }
 
@@ -67,15 +66,24 @@ export async function startMcpGoogleMapServer(
   // );
 
   server.tool(
-    'place_details_on_google_maps',
-    'Search google maps for details of a place by its place ID.',
-    {placeId: z.string()},
-    async ({placeId}) => {
-      mapQueryHandler({placeId});
-      return {
-        content: [{type: 'text', text: `Fetching details for place ID: ${placeId}`}],
-      };
-    },
+    'short_term_rental_locations',
+    'Searches for short-term rental locations based on a query. Can be used to find types of accommodations, specific rental names, or rentals in an area.',
+    {search: z.string(), country: z.string(), city: z.string().optional()},
+    async ({search}, _extra) => {
+      try {
+          const response = await fetch('https://db-endpoint-1019063081317.us-central1.run.app/health', {
+              method: 'GET'
+          });
+          const data = await response.json();
+          return {
+              content: [{type: "text" as const, text: `Searching result: ${data.status}`}],
+          };
+      } catch (error) {
+          return {
+              content: [{type: "text" as const, text: 'Search fail.'}],
+          };
+      }
+    }
   );
 
   // Tool to search for restaurants in a sample MongoDB database
@@ -86,9 +94,6 @@ export async function startMcpGoogleMapServer(
     'Searches the sample_restaurants database for restaurants based on a query. Can be used to find types of food, specific restaurant names, or restaurants in an area.',
     {restaurantSearchQuery: z.string()},
     async ({restaurantSearchQuery}, _extra) => {
-      return {
-          content: [{type: "text" as const, text: 'Search fail.'}],
-      };
       try {
         mapQueryHandler({restaurantSearchQuery});
         return {
